@@ -19,8 +19,8 @@ namespace TaskPaneAddIn
     /// </summary>
     [Guid("c71b4344-d8f2-4297-8c27-db194a19b9ed"), ComVisible(true)]
     [SwAddin(
-        Description = "TaskPaneAddIn description",
-        Title = "TaskPaneAddIn",
+        Description = "Compac Custom Property Task Pane",
+        Title = "Compac Task Pane",
         LoadAtStartup = true
         )]
     public class SwAddin : ISwAddin
@@ -36,6 +36,9 @@ namespace TaskPaneAddIn
         public const int mainItemID2 = 1;
         public const int mainItemID3 = 2;
         public const int flyoutGroupID = 91;
+
+        TaskpaneView myTaskPaneView;
+        UserControl1 myTaskPaneHost;
 
         #region Event Handler Variables
         Hashtable openDocs = new Hashtable();
@@ -154,41 +157,43 @@ namespace TaskPaneAddIn
             //Setup callbacks
             iSwApp.SetAddinCallbackInfo(0, this, addinID);
 
-            #region Setup the Command Manager
-            iCmdMgr = iSwApp.GetCommandManager(cookie);
-            AddCommandMgr();
-            #endregion
+            //#region Setup the Command Manager
+            //iCmdMgr = iSwApp.GetCommandManager(cookie);
+            //AddCommandMgr();
+            //#endregion
 
-            #region Setup the Event Handlers
-            SwEventPtr = (SolidWorks.Interop.sldworks.SldWorks)iSwApp;
-            openDocs = new Hashtable();
-            AttachEventHandlers();
-            #endregion
+            //#region Setup the Event Handlers
+            //SwEventPtr = (SolidWorks.Interop.sldworks.SldWorks)iSwApp;
+            //openDocs = new Hashtable();
+            //AttachEventHandlers();
+            //#endregion
 
-            #region Setup Sample Property Manager
-            AddPMP();
-            #endregion
+            //#region Setup Sample Property Manager
+            //AddPMP();
+            //#endregion
 
+            AddTaskPane();
             return true;
         }
 
         public bool DisconnectFromSW()
         {
-            RemoveCommandMgr();
-            RemovePMP();
-            DetachEventHandlers();
+            //RemoveCommandMgr();
+            //RemovePMP();
+            //DetachEventHandlers();
 
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(iCmdMgr);
-            iCmdMgr = null;
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(iSwApp);
-            iSwApp = null;
-            //The addin _must_ call GC.Collect() here in order to retrieve all managed code pointers 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            //System.Runtime.InteropServices.Marshal.ReleaseComObject(iCmdMgr);
+            //iCmdMgr = null;
+            //System.Runtime.InteropServices.Marshal.ReleaseComObject(iSwApp);
+            //iSwApp = null;
+            ////The addin _must_ call GC.Collect() here in order to retrieve all managed code pointers 
+            //GC.Collect();
+            //GC.WaitForPendingFinalizers();
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            //GC.Collect();
+            //GC.WaitForPendingFinalizers();
 
+            RemoveTaskPane();
             return true;
         }
         #endregion
@@ -355,6 +360,28 @@ namespace TaskPaneAddIn
         {
             ppage = null;
             return true;
+        }
+
+        //UI method to add task pane and remove task pane
+        public void AddTaskPane()
+        {
+            myTaskPaneView = iSwApp.CreateTaskpaneView2("", "Custom Property Pane");
+            myTaskPaneHost = myTaskPaneView.AddControl("Compac_CustomProperty_TaskPane","");
+        }
+        public void RemoveTaskPane()
+        {
+            try
+            {
+                myTaskPaneHost = null;
+                myTaskPaneView.DeleteView();
+                Marshal.ReleaseComObject(myTaskPaneView);
+                myTaskPaneView = null;
+
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         #endregion
