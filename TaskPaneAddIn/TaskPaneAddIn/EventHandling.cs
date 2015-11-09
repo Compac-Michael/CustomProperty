@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
+using System.Windows.Forms;
 
 namespace TaskPaneAddIn
 {
@@ -14,12 +15,18 @@ namespace TaskPaneAddIn
 
         protected Hashtable openModelViews;
 
+        protected Hashtable openMouseEvents;
+        protected UserControl1 iTaskHost;
+
+
+
         public DocumentEventHandler(ModelDoc2 modDoc, SwAddin addin)
         {
             document = modDoc;
             userAddin = addin;
             iSwApp = (ISldWorks)userAddin.SwApp;
             openModelViews = new Hashtable();
+            openMouseEvents = new Hashtable();
         }
 
         virtual public bool AttachEventHandlers()
@@ -44,6 +51,10 @@ namespace TaskPaneAddIn
                     DocView dView = new DocView(userAddin, mView, this);
                     dView.AttachEventHandlers();
                     openModelViews.Add(mView, dView);
+
+                    MouseEventHandler mMouse = new MouseEventHandler(userAddin, mView, this);
+                    mMouse.AttachEventHandlers();
+                    openMouseEvents.Add(mView, mMouse);
                 }
                 mView = (IModelView)mView.GetNext();
             }
@@ -73,6 +84,22 @@ namespace TaskPaneAddIn
                 dView.DetachEventHandlers();
                 openModelViews.Remove(key);
                 dView = null;
+            }
+
+            MouseEventHandler mMouse;
+            numKeys = openMouseEvents.Count;
+            if (numKeys==0)
+            {
+                return false;
+            }
+            keys = new object[numKeys];
+            openMouseEvents.Keys.CopyTo(keys, 0);
+            foreach (ModelView key in keys)
+            {
+                mMouse = (MouseEventHandler)openMouseEvents[key];
+                mMouse.DetachEventHandlers();
+                openMouseEvents.Remove(key);
+                mMouse = null;
             }
             return true;
         }
@@ -347,6 +374,68 @@ namespace TaskPaneAddIn
 
         public int OnRepaint(int repaintType)
         {
+            return 0;
+        }
+    }
+
+    public class MouseEventHandler
+    {
+        ISldWorks iSwApp;
+        SwAddin userAddin;
+        ModelView mView;
+        DocumentEventHandler parent;
+        UserControl1 iTaskHost;
+        Mouse mMouse;
+
+
+        public MouseEventHandler(SwAddin addin, IModelView mv, DocumentEventHandler doc)
+        {
+            userAddin = addin;
+            mView = (ModelView)mv;
+            mMouse = mView.GetMouse();
+            iSwApp = (ISldWorks)userAddin.SwApp;
+            parent = doc;
+        }
+
+        public bool AttachEventHandlers()
+        {
+            mView.DestroyNotify2 += new DModelViewEvents_DestroyNotify2EventHandler(OnDestroy);
+            mView.RepaintNotify += new DModelViewEvents_RepaintNotifyEventHandler(OnRepaint);
+            mMouse.MouseLBtnUpNotify+=new DMouseEvents_MouseLBtnUpNotifyEventHandler(MouseLBtnUpNotify);
+            return true;
+        }
+
+        public bool DetachEventHandlers()
+        {
+            mView.DestroyNotify2 -= new DModelViewEvents_DestroyNotify2EventHandler(OnDestroy);
+            mView.RepaintNotify -= new DModelViewEvents_RepaintNotifyEventHandler(OnRepaint);
+            mMouse.MouseLBtnUpNotify -= new DMouseEvents_MouseLBtnUpNotifyEventHandler(MouseLBtnUpNotify);
+            parent.DetachModelViewEventHandler(mView);
+            return true;
+        }
+
+        //EventHandlers
+        public int OnDestroy(int destroyType)
+        {
+            switch (destroyType)
+            {
+                case (int)swDestroyNotifyType_e.swDestroyNotifyHidden:
+                    return 0;
+
+                case (int)swDestroyNotifyType_e.swDestroyNotifyDestroy:
+                    return 0;
+            }
+
+            return 0;
+        }
+
+        public int OnRepaint(int repaintType)
+        {
+            return 0;
+        }
+        private int MouseLBtnUpNotify(int x, int y, int wparam)
+        {
+            MessageBox.Show("Left Click");
             return 0;
         }
     }

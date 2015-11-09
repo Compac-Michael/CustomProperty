@@ -155,7 +155,7 @@ namespace TaskPaneAddIn
             addinID = cookie;
 
             //Setup callbacks
-            iSwApp.SetAddinCallbackInfo(0, this, addinID);
+            //iSwApp.SetAddinCallbackInfo(0, this, addinID);
 
             //#region Setup the Command Manager
             //iCmdMgr = iSwApp.GetCommandManager(cookie);
@@ -163,9 +163,9 @@ namespace TaskPaneAddIn
             //#endregion
 
             //#region Setup the Event Handlers
-            //SwEventPtr = (SolidWorks.Interop.sldworks.SldWorks)iSwApp;
-            //openDocs = new Hashtable();
-            //AttachEventHandlers();
+            SwEventPtr = (SolidWorks.Interop.sldworks.SldWorks)iSwApp;
+            openDocs = new Hashtable();
+            AttachEventHandlers();
             //#endregion
 
             //#region Setup Sample Property Manager
@@ -180,18 +180,18 @@ namespace TaskPaneAddIn
         {
             //RemoveCommandMgr();
             //RemovePMP();
-            //DetachEventHandlers();
+            DetachEventHandlers();
 
-            //System.Runtime.InteropServices.Marshal.ReleaseComObject(iCmdMgr);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(iCmdMgr);
             //iCmdMgr = null;
-            //System.Runtime.InteropServices.Marshal.ReleaseComObject(iSwApp);
-            //iSwApp = null;
-            ////The addin _must_ call GC.Collect() here in order to retrieve all managed code pointers 
-            //GC.Collect();
-            //GC.WaitForPendingFinalizers();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(iSwApp);
+            iSwApp = null;
+            //The addin _must_ call GC.Collect() here in order to retrieve all managed code pointers 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
-            //GC.Collect();
-            //GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             RemoveTaskPane();
             return true;
