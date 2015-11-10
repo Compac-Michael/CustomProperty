@@ -7,6 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swpublished;
+using SolidWorks.Interop.swconst;
+using SolidWorksTools;
+using SolidWorksTools.File;
 
 namespace TaskPaneAddIn
 {
@@ -14,6 +19,19 @@ namespace TaskPaneAddIn
     [ProgId("Compac_CustomProperty_TaskPane")]
     public partial class UserControl1 : UserControl
     {
+        private int _CurrentDocType;
+        public int CurrentDocType
+        {
+            get
+            {
+                return _CurrentDocType;
+            }
+            set
+            {
+                _CurrentDocType = value;
+                setImages(value);
+            }
+        }
         
         public UserControl1()
         {
@@ -23,6 +41,42 @@ namespace TaskPaneAddIn
         private void button1_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Success");
+        }
+
+        public void setImages(int currentDocType)
+        {
+            if (currentDocType==(int)swDocumentTypes_e.swDocPART)
+            {
+                picComputer.Visible = true;
+                picPrinter.Visible = false;
+                picSetting.Visible = false;
+            }
+            else if (currentDocType==(int)swDocumentTypes_e.swDocASSEMBLY)
+            {
+                picComputer.Visible = false;
+                picPrinter.Visible = true;
+                picSetting.Visible = false;
+                
+            }
+            else if (currentDocType == (int)swDocumentTypes_e.swDocDRAWING)
+            {
+                picComputer.Visible = false;
+                picPrinter.Visible = false;
+                picSetting.Visible = true;
+            }
+            else if (currentDocType == 100) //For parts and assemblies
+            {
+                picComputer.Visible = true;
+                picPrinter.Visible = true;
+                picSetting.Visible = false;
+            }
+            else //None selected
+            {
+                picComputer.Visible = false;
+                picPrinter.Visible = false;
+                picSetting.Visible = false;
+
+            }
         }
     }
 }

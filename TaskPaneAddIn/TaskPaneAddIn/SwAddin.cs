@@ -558,6 +558,7 @@ namespace TaskPaneAddIn
                             return false; //Unsupported document type
                         }
                 }
+                docHandler.iTaskHostIn = myTaskPaneHost;
                 docHandler.AttachEventHandlers();
                 openDocs.Add(modDoc, docHandler);
             }
