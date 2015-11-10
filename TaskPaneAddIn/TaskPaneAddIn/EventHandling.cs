@@ -18,7 +18,17 @@ namespace TaskPaneAddIn
         protected Hashtable openMouseEvents;
         protected UserControl1 iTaskHost;
 
-
+        public UserControl1 iTaskHostIn
+        {
+            get
+            {
+                return iTaskHost;
+            }
+            set
+            {
+                iTaskHost = value;
+            }
+        }
 
         public DocumentEventHandler(ModelDoc2 modDoc, SwAddin addin)
         {
@@ -162,15 +172,18 @@ namespace TaskPaneAddIn
         }
     }
 
+    //Class to listen for Assembly Events
     public class AssemblyEventHandler : DocumentEventHandler
     {
         AssemblyDoc doc;
         SwAddin swAddin;
+        ModelDoc2 swModel;
 
         public AssemblyEventHandler(ModelDoc2 modDoc, SwAddin addin)
             : base(modDoc, addin)
         {
             doc = (AssemblyDoc)document;
+            swModel = modDoc;
             swAddin = addin;
         }
 
@@ -210,6 +223,60 @@ namespace TaskPaneAddIn
 
         public int OnNewSelection()
         {
+            SelectionMgr swSelMgr = swModel.SelectionManager; //Read selections in Solidworks
+            if (swSelMgr.GetSelectedObjectCount2(-1) == 1)//(-1) means nothing here, if only one object is selected then proceed with the following code
+            {
+                Component2 swComponent = swSelMgr.GetSelectedObjectsComponent4(1, -1); //Get the component object(components are either parts or assemblies)
+                    if (swComponent==null)
+                    {
+                        return 0;
+                    }
+                    ModelDoc2 swCompModel=swComponent.GetModelDoc2(); //Get the ModelDoc2 for the selected component
+                iTaskHost.CurrentDocType=swCompModel.GetType();//Set the property that was created earlier and pass the document type 
+
+
+            }
+            else //More than one file selected (similar to above except checks to see if only assemblies are selected or if there is a combination of parts and assemblies)
+            {
+                Boolean boolHasParts = false;
+                Boolean boolHasAssemblies = false;
+                Component2 swComponent = null;
+                ModelDoc2 swCompModel = null;
+                for (int i = 0; i < swSelMgr.GetSelectedObjectCount2(-1);i++) //Loop through selection
+                {
+                    swComponent = swSelMgr.GetSelectedObjectsComponent4(i, -1); // Get each component
+                    if (swComponent!=null)      
+                    {
+                        swCompModel = swComponent.GetModelDoc2();
+                        if (swCompModel.GetType()==(int)swDocumentTypes_e.swDocPART) 
+                        {
+                            boolHasParts = true;
+                        }
+                        else if (swCompModel.GetType() == (int)swDocumentTypes_e.swDocASSEMBLY)
+                        {
+                            boolHasAssemblies = true;
+                        }
+                    }
+                    if (boolHasParts && boolHasAssemblies)
+                    {
+                        iTaskHost.CurrentDocType = 100;
+                    }
+                    else if (boolHasAssemblies)
+                    {
+                        iTaskHost.CurrentDocType = (int)swDocumentTypes_e.swDocASSEMBLY;
+                    }
+                    else if (boolHasParts)
+                    {
+                        iTaskHost.CurrentDocType = (int)swDocumentTypes_e.swDocPART;
+                    }
+                    else
+                    {
+                        iTaskHost.CurrentDocType = 0;
+                    }
+                    
+                }
+
+            }
             return 0;
         }
 
@@ -435,7 +502,7 @@ namespace TaskPaneAddIn
         }
         private int MouseLBtnUpNotify(int x, int y, int wparam)
         {
-            MessageBox.Show("Left Click");
+            //MessageBox.Show("Left Click");
             return 0;
         }
     }
