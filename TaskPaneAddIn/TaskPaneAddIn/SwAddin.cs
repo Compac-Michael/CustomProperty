@@ -155,7 +155,7 @@ namespace TaskPaneAddIn
             addinID = cookie;
 
             //Setup callbacks
-            //iSwApp.SetAddinCallbackInfo(0, this, addinID);
+            iSwApp.SetAddinCallbackInfo(0, this, addinID);
 
             //#region Setup the Command Manager
             //iCmdMgr = iSwApp.GetCommandManager(cookie);
@@ -367,6 +367,8 @@ namespace TaskPaneAddIn
         {
             myTaskPaneView = iSwApp.CreateTaskpaneView2("", "Custom Property Pane");
             myTaskPaneHost = myTaskPaneView.AddControl("Compac_CustomProperty_TaskPane","");
+            UserControl1 _objTaskPaneControl = (UserControl1)myTaskPaneView.GetControl();
+            _objTaskPaneControl.swApp = iSwApp;
         }
         public void RemoveTaskPane()
         {

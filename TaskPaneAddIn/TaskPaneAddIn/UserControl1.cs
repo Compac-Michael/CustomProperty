@@ -12,6 +12,7 @@ using SolidWorks.Interop.swpublished;
 using SolidWorks.Interop.swconst;
 using SolidWorksTools;
 using SolidWorksTools.File;
+using TaskPaneAddIn;
 
 namespace TaskPaneAddIn
 {
@@ -20,6 +21,7 @@ namespace TaskPaneAddIn
     public partial class UserControl1 : UserControl
     {
         private int _CurrentDocType;
+        ISldWorks iSwApp;
         public int CurrentDocType
         {
             get
@@ -32,6 +34,17 @@ namespace TaskPaneAddIn
                 setImages(value);
             }
         }
+        public ISldWorks swApp
+        {
+            get
+            {
+                return iSwApp;
+            }
+            set
+            {
+                this.iSwApp = value;
+            }
+        }
         
         public UserControl1()
         {
@@ -40,7 +53,21 @@ namespace TaskPaneAddIn
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Success");
+            ModelDoc2 swModel = this.swApp.ActiveDoc;
+            if (swModel != null)
+            {
+                ConfigurationManager swConfigMgr = swModel.ConfigurationManager;
+                Configuration swConfig = swConfigMgr.ActiveConfiguration;
+                CustomPropertyManager cusPropMgr = swConfig.CustomPropertyManager;
+                int nNbProps = cusPropMgr.Count;
+                String[] vPropNames = cusPropMgr.GetNames();
+                for (int i = 0; i < nNbProps - 1; i++)
+                {
+                    string tt = vPropNames[i];
+                }
+                MessageBox.Show(nNbProps.ToString());
+                MessageBox.Show("Title" + swModel.GetTitle());
+            }
         }
 
         public void setImages(int currentDocType)
