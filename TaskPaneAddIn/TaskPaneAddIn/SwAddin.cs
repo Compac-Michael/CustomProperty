@@ -10,6 +10,13 @@ using SolidWorksTools;
 using SolidWorksTools.File;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Forms;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using TaskPaneAddIn;
 
 
 namespace TaskPaneAddIn
@@ -39,6 +46,7 @@ namespace TaskPaneAddIn
 
         TaskpaneView myTaskPaneView;
         UserControl1 myTaskPaneHost;
+        UserControl1 _objTaskPaneControl;
 
         #region Event Handler Variables
         Hashtable openDocs = new Hashtable();
@@ -367,9 +375,19 @@ namespace TaskPaneAddIn
         {
             myTaskPaneView = iSwApp.CreateTaskpaneView2("", "Custom Property Pane");
             myTaskPaneHost = myTaskPaneView.AddControl("Compac_CustomProperty_TaskPane","");
-            UserControl1 _objTaskPaneControl = (UserControl1)myTaskPaneView.GetControl();
-            _objTaskPaneControl.swApp = iSwApp;
+             _objTaskPaneControl = (UserControl1)myTaskPaneView.GetControl();
+            if (_objTaskPaneControl != null)
+            {
+                _objTaskPaneControl.swApp = iSwApp;
+                //_objTaskPaneControl.Load += new EventHandler(_objTaskPaneControl_Load);
+            }
+            DataGridView gridView=(DataGridView)_objTaskPaneControl.Controls.Find("dataGridView1",true).FirstOrDefault();
+            if(gridView!=null)
+            {
+                //this.tableTableAdapter.Fill(this.addInDataSet1.Table);
+            }
         }
+
         public void RemoveTaskPane()
         {
             try

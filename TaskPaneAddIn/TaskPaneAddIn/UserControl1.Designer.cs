@@ -33,6 +33,7 @@
             this.picComputer = new System.Windows.Forms.PictureBox();
             this.picPrinter = new System.Windows.Forms.PictureBox();
             this.picSetting = new System.Windows.Forms.PictureBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.picComputer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picPrinter)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picSetting)).BeginInit();
@@ -40,8 +41,8 @@
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.Location = new System.Drawing.Point(0, 35);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(326, 42);
@@ -79,16 +80,26 @@
             this.picSetting.TabIndex = 4;
             this.picSetting.TabStop = false;
             // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(138, 210);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 6;
+            // 
             // UserControl1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.picSetting);
             this.Controls.Add(this.picPrinter);
             this.Controls.Add(this.picComputer);
             this.Controls.Add(this.button1);
             this.Name = "UserControl1";
             this.Size = new System.Drawing.Size(326, 485);
+            this.Load += new System.EventHandler(this.UserControl1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picComputer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picPrinter)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picSetting)).EndInit();
@@ -103,5 +114,6 @@
         private System.Windows.Forms.PictureBox picComputer;
         private System.Windows.Forms.PictureBox picPrinter;
         private System.Windows.Forms.PictureBox picSetting;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }

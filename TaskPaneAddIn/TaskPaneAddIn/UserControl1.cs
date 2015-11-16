@@ -13,6 +13,7 @@ using SolidWorks.Interop.swconst;
 using SolidWorksTools;
 using SolidWorksTools.File;
 using TaskPaneAddIn;
+using System.Data.SqlClient;
 
 namespace TaskPaneAddIn
 {
@@ -104,6 +105,42 @@ namespace TaskPaneAddIn
                 picSetting.Visible = false;
 
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void UserControl1_Load(object sender, EventArgs e)
+        {
+            //this.tableTableAdapter.Fill(this.addInDataSet1.Table);
+            string connectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=C:\Users\michael.lu\Documents\GitHub\CustomProperty\TaskPaneAddIn\TaskPaneAddIn\AddIn.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection con = new SqlConnection(connectionString);
+            con.Open();
+            string commandString = "SELECT * FROM Product";
+            SqlCommand cmd = new SqlCommand(commandString, con);
+            List<string> someList = new List<string>();
+            SqlDataReader read = cmd.ExecuteReader();
+            try
+            {
+                while (read.Read())
+                {
+                    someList.Add(read["ProductCode"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            con.Close();
+
+            comboBox2.DataSource = someList;
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            //this.tableTableAdapter.Fill(this.addInDataSet1.Table);
         }
     }
 }
